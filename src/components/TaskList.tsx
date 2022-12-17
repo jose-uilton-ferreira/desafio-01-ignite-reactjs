@@ -10,20 +10,40 @@ interface Task {
   isComplete: boolean;
 }
 
+function randomNumberInterval(a: number, b: number) {
+  return Math.floor(Math.random() * (b - a + 1)) + a
+}
+
 export function TaskList() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState('');
 
   function handleCreateNewTask() {
-    // Crie uma nova task com um id random, não permita criar caso o título seja vazio.
+    if (!newTaskTitle) {
+      return;
+    }
+
+    const id = randomNumberInterval(1000000000, 9999999999);
+    const newTask: Task = {
+      id: id,
+      title: newTaskTitle,
+      isComplete: false
+    }
+
+    setTasks((tasks) => [...tasks, newTask]);
   }
 
   function handleToggleTaskCompletion(id: number) {
-    // Altere entre `true` ou `false` o campo `isComplete` de uma task com dado ID
+    setTasks((tasks) => tasks.map((task) => {
+      if (task.id !== id) return task;
+
+      task.isComplete = !task.isComplete;
+      return task;
+    }));
   }
 
   function handleRemoveTask(id: number) {
-    // Remova uma task da listagem pelo ID
+    setTasks((tasks) => tasks.filter((task) => task.id !== id));
   }
 
   return (
